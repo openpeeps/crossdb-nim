@@ -26,5 +26,5 @@ jobs:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: nimble install -Y
-      - run: nim c -r src/${{ github.event.repository.name }}.nim
+      - run: nim c -r src/crossdb.nim
       - run: nimble test
