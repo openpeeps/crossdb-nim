@@ -52,7 +52,7 @@ type
     # XDB_TYPE_GEOMETRY   = 17 # TBD geometry
     # XDB_TYPE_JSON       = 18 # TBD json string
     # XDB_TYPE_DYNAMIC  = 20, 
-    XDB_TYPE_MAX = 21
+    # XDB_TYPE_MAX = 21
 
   #
   # CrossDB Result
@@ -181,7 +181,7 @@ proc xdb_bind_str2*(pStmt: xdb_stmt_t; para_id: uint16; str: cstring; len: cint)
 proc xdb_clear_bindings*(pStmt: xdb_stmt_t): xdb_ret
 proc xdb_stmt_exec*(pStmt: xdb_stmt_t): ptr xdb_res_t
 proc xdb_stmt_bexec*(pStmt: xdb_stmt_t): ptr xdb_res_t {.varargs.}
-proc xdb_stmt_vbexec*(pStmt: xdb_stmt_t; ap: va_list): ptr xdb_res_t
+proc xdb_stmt_vbexec*(pStmt: xdb_stmt_t; ap: varargs[pointer]): ptr xdb_res_t
 proc xdb_stmt_close*(pStmt: xdb_stmt_t)
 
 # proc xdb_stmt_exec_cb*(pStmt: xdb_stmt_t; callback: xdb_row_callback;
@@ -201,5 +201,5 @@ proc xdb_rollback*(pConn: xdb_conn_t): xdb_ret
 #
 # Misc
 #
-# todo
+proc xdb_print_row*(meta: uint64, row: ptr xdb_row_t, format: cint): cint
 {.pop.}
