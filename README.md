@@ -2,7 +2,7 @@
 <p align="center"><code>nimble install crossdb</code></p>
 <p align="center">
   <a href="https://github.com/">API reference</a><br>
-  <img src="https://github.com/openpeeps/crossdb/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/crossdb/workflows/docs/badge.svg" alt="Github Actions">
+  <img src="https://github.com/openpeeps/crossdb-nim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/crossdb-nim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
 ## 😍 Key Features
