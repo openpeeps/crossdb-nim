@@ -25,6 +25,10 @@ jobs:
         with:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          git clone https://github.com/crossdb-org/crossdb.git
+          cd crossdb && make build
+          sudo make install
       - run: nimble install -Y
       - run: nim c -r src/crossdb.nim
       - run: nimble test
