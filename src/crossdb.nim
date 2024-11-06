@@ -8,7 +8,6 @@
 #     Made by Humans from OpenPeeps
 #     https://github.com/openpeeps/crossdb-nim
 
-import std/[macros, options, tables]
 from std/nativesockets import Port
 
 import ./crossdb/bindings

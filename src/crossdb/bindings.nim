@@ -11,6 +11,7 @@
 type
   va_list* {.importc: "va_list", header: "<stdarg.h>".} = object
 
+{.passL:"-lcrossdb".}
 {.push importc, header: "crossdb.h".}
 type
   xdb_errno_e* = enum
