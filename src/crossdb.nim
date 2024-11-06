@@ -23,7 +23,8 @@ type
 
   CDBValue* = object
     ## Object variant representing CrossDB Values
-    case kind: xdb_type_t
+    name*: string
+    case kind*: xdb_type_t
     of XDB_TYPE_INT:
       int32Value*: int32
     of XDB_TYPE_BIGINT:
@@ -43,9 +44,9 @@ type
     of XDB_TYPE_CHAR, XDB_TYPE_VCHAR:
       strValue*: string
     of XDB_TYPE_FLOAT:
-      float32Val*: float32
+      float32Value*: float32
     of XDB_TYPE_DOUBLE:
-      float64Val*: float64
+      float64Value*: float64
     of XDB_TYPE_TIMESTAMP:
       timestampValue*: string # todo parse with `std/times`
     of XDB_TYPE_BINARY:
@@ -105,6 +106,9 @@ proc getColname*(cdbres: CDBResult, icol: uint16): string =
   ## Retrieve name of a column based on `i` position
   $(xdb_column_name(cdbres[].col_meta, icol))
 
+#
+# Internal procs to create CDBValue variants
+#
 proc `$charValue`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16): CDBValue =
   ## Create new CDBValue of `XDB_TYPE_CHAR`
   CDBValue(kind: XDB_TYPE_CHAR, strValue: $(xdb_column_str(cdbres[].col_meta, xdbRow, i)))
@@ -139,11 +143,11 @@ proc `$uBigIntValue`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16): C
 
 proc `$float32Value`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16): CDBValue =
   ## Create a new CDBValue of `XDB_TYPE_FLOAT`
-  CDBValue(kind: XDB_TYPE_FLOAT, float32Val: cast[float32](xdb_column_float(cdbres[].col_meta, xdbRow, i)))
+  CDBValue(kind: XDB_TYPE_FLOAT, float32Value: cast[float32](xdb_column_float(cdbres[].col_meta, xdbRow, i)))
 
 proc `$float64Value`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16): CDBValue =
   ## Create a new CDBValue of `XDB_TYPE_DOUBLE`
-  CDBValue(kind: XDB_TYPE_DOUBLE, float64Val: cast[float64](xdb_column_double(cdbres[].col_meta, xdbRow, i)))
+  CDBValue(kind: XDB_TYPE_DOUBLE, float64Value: cast[float64](xdb_column_double(cdbres[].col_meta, xdbRow, i)))
 
 proc `$timestampValue`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16): CDBValue =
   ## Create a new CDBValue of `XDB_TYPE_TIMESTAMP`
@@ -154,15 +158,16 @@ proc `$timestampValue`(cdbres: CDBResult, xdbRow: ptr xdb_row_t, i: var uint16):
 proc execGet*(cdb: CDBConnection; sql: string): seq[seq[CDBValue]] =
   ## Execute SQL statement and returns rows
   let cdbres = xdb_exec(cdb, sql)
-  if cdbres.row_count > 0:
+  assert cdbres[].errcode == 0
+  if cdbres[].row_count > 0:
     var xdbRow: ptr xdb_row_t = cdbres.xdb_fetch_row()
     while xdbRow != nil:
       var i: uint16 = 0
       var row: seq[CDBValue]
       while i < cdbres[].col_count:
-        var val: CDBValue
+        var col: CDBValue
         let xdbColType = cdbres.getColtype(i)
-        val =
+        col =
           case xdbColType
           of XDB_TYPE_CHAR:      `$charValue`(cdbres, xdbRow, i)
           of XDB_TYPE_INT:       `$int32Value`(cdbres, xdbRow, i)
@@ -176,7 +181,8 @@ proc execGet*(cdb: CDBConnection; sql: string): seq[seq[CDBValue]] =
           of XDB_TYPE_DOUBLE:    `$float64Value`(cdbres, xdbRow, i)
           of XDB_TYPE_TIMESTAMP: `$timestampValue`(cdbres, xdbRow, i)
           else: CDBValue(kind: XDB_TYPE_NULL)
-        row.add(val)
+        col.name = cdbres.getColname(i)
+        row.add(col)
         inc i
       add result, row
       xdbRow = cdbres.xdb_fetch_row()
