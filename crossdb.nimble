@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "George Lemon"
-description   = "CrossDB Nim Driver"
+description   = "CrossDB Driver for Nim"
 license       = "MIT"
 srcDir        = "src"
 
